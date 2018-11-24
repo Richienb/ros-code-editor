@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>ROS Code Editor</title>
+    <meta name="description" content="An online code and plain text editor taking advantage of Google's Material Design for the Web library and Ace.">
+
+    <link rel='stylesheet' href='https://unpkg.com/material-components-web@0.41.1/dist/material-components-web.min.css'>
+
+    <style>
+        :root {
+            --mdc-theme-primary: #3f51b5;
+            --mdc-theme-secondary: #f44336;
+            --mdc-theme-on-primary: #ffffff;
+            --mdc-theme-on-secondary: #ffffff;
+            body {
+                background-color: #3f51b5;
+                main {
+                    background-color: #ffffff;
+                    border-radius: 4px;
+                    position: absolute;
+                    margin-top: 20px;
+                    margin-bottom: 20px;
+                    margin-left: 20px;
+                    margin-right: 20px;
+                    min-width: calc(100vw - 80px);
+                    min-height: calc(100vh - 80px);
+                    padding: 20px;
+                }
+            }
+        }
+        
+        @font-face {
+            font-family: "Fira Code";
+            font-style: normal;
+            font-weight: 400;
+            src: local("Fira Code"), url("https://cdn.jsdelivr.net/npm/firacode@1/distr/woff2/FiraCode-Regular.woff2") format("woff2"), url("https://cdn.jsdelivr.net/npm/firacode@1/distr/woff/FiraCode-Regular.woff") format("woff"), url("https://cdn.jsdelivr.net/npm/firacode@1/distr/ttf/FiraCode-Regular.ttf") format("truetype"), url("https://cdn.jsdelivr.net/npm/firacode@1/distr/otf/FiraCode-Regular.otf") format("opentype"), url("https://cdn.jsdelivr.net/npm/firacode@1/distr/eot/FiraCode-Regular.eot") format("embedded-opentype");
+        }
+        
+        .wrapper {
+            position: relative;
+            min-height: calc(100vh - 155px);
+        }
+        
+        #ace-editorid {
+            font-size: 0.9em;
+            font-family: "Fira Code", "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            border: 1px solid rgba(221, 221, 221, 0.86667);
+            border-radius: 4px;
+            line-height: 2em;
+        }
+        
+        .mdc-select,
+        .mdc-list {
+            max-width: 20rem;
+        }
+        
+        #settings-button {
+            float: right;
+            height: 56px;
+        }
+        
+        #settings-menu {
+            z-index: 999;
+        }
+        
+        .mdc-switch-wrap {
+            padding: 16px;
+        }
+        
+        .mdc-switch-wrap > label {
+            padding-left: 16px;
+        }
+    </style>
+
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto:300,400,500'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css'>
+
+</head>
+
+<body>
+
+    <main class="mdc-typography">
+        <div class="mdc-select mdc-select--outlined ace-lang">
+            <input type="hidden" name="enhanced-select">
+            <i class="mdc-select__dropdown-icon"></i>
+            <div id="demo-selected-text" class="mdc-select__selected-text" role="button" aria-haspopup="listbox" aria-labelledby="demo-label demo-selected-text">Language</div>
+            <div class="mdc-select__menu mdc-menu mdc-menu-surface" role="listbox">
+                <ul class="mdc-list">
+                    <li class="mdc-list-item" data-value="javascript" role="option">JavaScript</li>
+                    <li class="mdc-list-item" data-value="abap" role="option">ABAP</li>
+                    <li class="mdc-list-item" data-value="abc" role="option">ABC</li>
+                    <li class="mdc-list-item" data-value="actionscript" role="option">ActionScript</li>
+                    <li class="mdc-list-item" data-value="ada" role="option">ADA</li>
+                    <li class="mdc-list-item" data-value="apache_conf" role="option">Apache Config</li>
+                    <li class="mdc-list-item" data-value="apex" role="option">Apex</li>
+                    <li class="mdc-list-item" data-value="asciidoc" role="option">AsciiDoc</li>
+                    <li class="mdc-list-item" data-value="asl" role="option">ASL</li>
+                    <li class="mdc-list-item" data-value="assembly_x86" role="option">Assembly x86</li>
+                    <li class="mdc-list-item" data-value="autohotkey" role="option">AutoHotKey</li>
+                    <li class="mdc-list-item" data-value="batchfile" role="option">BatchFile</li>
+                    <li class="mdc-list-item" data-value="bro" role="option">Bro</li>
+                    <li class="mdc-list-item" data-value="c_cpp" role="option">C and C++</li>
+                    <li class="mdc-list-item" data-value="csharp" role="option">C#</li>
+                    <li class="mdc-list-item" data-value="c9search" role="option">C9 Search Results</li>
+                    <li class="mdc-list-item" data-value="cirru" role="option">Cirru</li>
+                    <li class="mdc-list-item" data-value="clojure" role="option">Clojure</li>
+                    <li class="mdc-list-item" data-value="cobol" role="option">Cobol</li>
+                    <li class="mdc-list-item" data-value="coffeescript" role="option">CoffeeScript</li>
+                    <li class="mdc-list-item" data-value="coldfusion" role="option">ColdFusion</li>
+                    <li class="mdc-list-item" data-value="csound" role="option">Csound</li>
+                    <li class="mdc-list-item" data-value="csound_document" role="option">Csound Document</li>
+                    <li class="mdc-list-item" data-value="csound_score" role="option">Csound Score</li>
+                    <li class="mdc-list-item" data-value="css" role="option">CSS</li>
+                    <li class="mdc-list-item" data-value="curly" role="option">Curly</li>
+                    <li class="mdc-list-item" data-value="d" role="option">D</li>
+                    <li class="mdc-list-item" data-value="dart" role="option">Dart</li>
+                    <li class="mdc-list-item" data-value="diff" role="option">Diff</li>
+                    <li class="mdc-list-item" data-value="django" role="option">Django</li>
+                    <li class="mdc-list-item" data-value="dockerfile" role="option">Dockerfile</li>
+                    <li class="mdc-list-item" data-value="dot" role="option">Dot</li>
+                    <li class="mdc-list-item" data-value="drools" role="option">Drools</li>
+                    <li class="mdc-list-item" data-value="edifact" role="option">Edifact</li>
+                    <li class="mdc-list-item" data-value="eiffel" role="option">Eiffel</li>
+                    <li class="mdc-list-item" data-value="ejs" role="option">EJS</li>
+                    <li class="mdc-list-item" data-value="elixir" role="option">Elixir</li>
+                    <li class="mdc-list-item" data-value="elm" role="option">Elm</li>
+                    <li class="mdc-list-item" data-value="erlang" role="option">Erlang</li>
+                    <li class="mdc-list-item" data-value="forth" role="option">Forth</li>
+                    <li class="mdc-list-item" data-value="fortran" role="option">Fortran</li>
+                    <li class="mdc-list-item" data-value="freemarker" role="option">FreeMarker</li>
+                    <li class="mdc-list-item" data-value="fsharp" role="option">FSharp</li>
+                    <li class="mdc-list-item" data-value="fsl" role="option">FSL</li>
+                    <li class="mdc-list-item" data-value="gcode" role="option">Gcode</li>
+                    <li class="mdc-list-item" data-value="gherkin" role="option">Gherkin</li>
+                    <li class="mdc-list-item" data-value="gitignore" role="option">Gitignore</li>
+                    <li class="mdc-list-item" data-value="glsl" role="option">Glsl</li>
+                    <li class="mdc-list-item" data-value="go" role="option">Go</li>
+                    <li class="mdc-list-item" data-value="gobstones" role="option">Gobstones</li>
+                    <li class="mdc-list-item" data-value="graphqlschema" role="option">GraphQLSchema</li>
+                    <li class="mdc-list-item" data-value="groovy" role="option">Groovy</li>
+                    <li class="mdc-list-item" data-value="haml" role="option">HAML</li>
+                    <li class="mdc-list-item" data-value="handlebars" role="option">Handlebars</li>
+                    <li class="mdc-list-item" data-value="haskell" role="option">Haskell</li>
+                    <li class="mdc-list-item" data-value="haskell cabal" role="option">Haskell Cabal</li>
+                    <li class="mdc-list-item" data-value="haxe" role="option">haXe</li>
+                    <li class="mdc-list-item" data-value="hjson" role="option">Hjson</li>
+                    <li class="mdc-list-item" data-value="html" role="option">HTML</li>
+                    <li class="mdc-list-item" data-value="html_elixir" role="option">HTML (Elixir)</li>
+                    <li class="mdc-list-item" data-value="html_ruby" role="option">HTML (Ruby)</li>
+                    <li class="mdc-list-item" data-value="ini" role="option">INI</li>
+                    <li class="mdc-list-item" data-value="io" role="option">Io</li>
+                    <li class="mdc-list-item" data-value="jack" role="option">Jack</li>
+                    <li class="mdc-list-item" data-value="jade" role="option">Jade</li>
+                    <li class="mdc-list-item" data-value="java" role="option">Java</li>
+                    <li class="mdc-list-item" data-value="json" role="option">JSON</li>
+                    <li class="mdc-list-item" data-value="jsoniq" role="option">JSONiq</li>
+                    <li class="mdc-list-item" data-value="jsp" role="option">JSP</li>
+                    <li class="mdc-list-item" data-value="jssm" role="option">JSSM</li>
+                    <li class="mdc-list-item" data-value="jsx" role="option">JSX</li>
+                    <li class="mdc-list-item" data-value="julia" role="option">Julia</li>
+                    <li class="mdc-list-item" data-value="kotlin" role="option">Kotlin</li>
+                    <li class="mdc-list-item" data-value="latex" role="option">LaTeX</li>
+                    <li class="mdc-list-item" data-value="less" role="option">LESS</li>
+                    <li class="mdc-list-item" data-value="liquid" role="option">Liquid</li>
+                    <li class="mdc-list-item" data-value="lisp" role="option">Lisp</li>
+                    <li class="mdc-list-item" data-value="livescript" role="option">LiveScript</li>
+                    <li class="mdc-list-item" data-value="logiql" role="option">LogiQL</li>
+                    <li class="mdc-list-item" data-value="lsl" role="option">LSL</li>
+                    <li class="mdc-list-item" data-value="lua" role="option">Lua</li>
+                    <li class="mdc-list-item" data-value="luapage" role="option">LuaPage</li>
+                    <li class="mdc-list-item" data-value="lucene" role="option">Lucene</li>
+                    <li class="mdc-list-item" data-value="makefile" role="option">Makefile</li>
+                    <li class="mdc-list-item" data-value="markdown" role="option">Markdown</li>
+                    <li class="mdc-list-item" data-value="mask" role="option">Mask</li>
+                    <li class="mdc-list-item" data-value="matlab" role="option">MATLAB</li>
+                    <li class="mdc-list-item" data-value="maze" role="option">Maze</li>
+                    <li class="mdc-list-item" data-value="mel" role="option">MEL</li>
+                    <li class="mdc-list-item" data-value="mixal" role="option">MIXAL</li>
+                    <li class="mdc-list-item" data-value="mushcode" role="option">MUSHCode</li>
+                    <li class="mdc-list-item" data-value="mysql" role="option">MySQL</li>
+                    <li class="mdc-list-item" data-value="nix" role="option">Nix</li>
+                    <li class="mdc-list-item" data-value="nix" role="option">Nix</li>
+                    <li class="mdc-list-item" data-value="nsis" role="option">NSIS</li>
+                    <li class="mdc-list-item" data-value="objectivec" role="option">Objective-C</li>
+                    <li class="mdc-list-item" data-value="ocaml" role="option">OCaml</li>
+                    <li class="mdc-list-item" data-value="pascal" role="option">Pascal</li>
+                    <li class="mdc-list-item" data-value="perl" role="option">Perl</li>
+                    <li class="mdc-list-item" data-value="perl6" role="option">Perl 6</li>
+                    <li class="mdc-list-item" data-value="pgsql" role="option">pgSQL</li>
+                    <li class="mdc-list-item" data-value="php" role="option">PHP</li>
+                    <li class="mdc-list-item" data-value="php_laravel_blade" role="option">PHP Blade Template</li>
+                    <li class="mdc-list-item" data-value="pig" role="option">Pig</li>
+                    <li class="mdc-list-item" data-value="plain_text" role="option">Plain Text</li>
+                    <li class="mdc-list-item" data-value="powershell" role="option">Powershell</li>
+                    <li class="mdc-list-item" data-value="praat" role="option">Praat</li>
+                    <li class="mdc-list-item" data-value="prolog" role="option">Prolog</li>
+                    <li class="mdc-list-item" data-value="properties" role="option">Properties</li>
+                    <li class="mdc-list-item" data-value="protobuf" role="option">Protobuf</li>
+                    <li class="mdc-list-item" data-value="puppet" role="option">Puppet</li>
+                    <li class="mdc-list-item mdc-list-item--selected" data-value="python" role="option">Python</li>
+                    <li class="mdc-list-item" data-value="r" role="option">R</li>
+                    <li class="mdc-list-item" data-value="razor" role="option">Razor</li>
+                    <li class="mdc-list-item" data-value="rdoc" role="option">RDoc</li>
+                    <li class="mdc-list-item" data-value="red" role="option">Red</li>
+                    <li class="mdc-list-item" data-value="rhtml" role="option">RHTML</li>
+                    <li class="mdc-list-item" data-value="rst" role="option">RST</li>
+                    <li class="mdc-list-item" data-value="ruby" role="option">Ruby</li>
+                    <li class="mdc-list-item" data-value="rust" role="option">Rust</li>
+                    <li class="mdc-list-item" data-value="sass" role="option">SASS</li>
+                    <li class="mdc-list-item" data-value="scad" role="option">SCAD</li>
+                    <li class="mdc-list-item" data-value="scala" role="option">Scala</li>
+                    <li class="mdc-list-item" data-value="scheme" role="option">Scheme</li>
+                    <li class="mdc-list-item" data-value="scss" role="option">SCSS</li>
+                    <li class="mdc-list-item" data-value="sh" role="option">SH</li>
+                    <li class="mdc-list-item" data-value="sjs" role="option">SJS</li>
+                    <li class="mdc-list-item" data-value="slim" role="option">Slim</li>
+                    <li class="mdc-list-item" data-value="smarty" role="option">Smarty</li>
+                    <li class="mdc-list-item" data-value="snippets" role="option">snippets</li>
+                    <li class="mdc-list-item" data-value="soy_template" role="option">Soy Template</li>
+                    <li class="mdc-list-item" data-value="space" role="option">Space</li>
+                    <li class="mdc-list-item" data-value="sql" role="option">SQL</li>
+                    <li class="mdc-list-item" data-value="sqlserver" role="option">SQLServer</li>
+                    <li class="mdc-list-item" data-value="stylus" role="option">Stylus</li>
+                    <li class="mdc-list-item" data-value="svg" role="option">SVG</li>
+                    <li class="mdc-list-item" data-value="swift" role="option">Swift</li>
+                    <li class="mdc-list-item" data-value="tcl" role="option">Tcl</li>
+                    <li class="mdc-list-item" data-value="terraform" role="option">Terraform</li>
+                    <li class="mdc-list-item" data-value="tex" role="option">Tex</li>
+                    <li class="mdc-list-item" data-value="text" role="option">Text</li>
+                    <li class="mdc-list-item" data-value="textile" role="option">Textile</li>
+                    <li class="mdc-list-item" data-value="toml" role="option">Toml</li>
+                    <li class="mdc-list-item" data-value="tsx" role="option">TSX</li>
+                    <li class="mdc-list-item" data-value="twig" role="option">Twig</li>
+                    <li class="mdc-list-item" data-value="typescript" role="option">Typescript</li>
+                    <li class="mdc-list-item" data-value="vala" role="option">Vala</li>
+                    <li class="mdc-list-item" data-value="vbscript" role="option">VBScript</li>
+                    <li class="mdc-list-item" data-value="velocity" role="option">Velocity</li>
+                    <li class="mdc-list-item" data-value="verilog" role="option">Verilog</li>
+                    <li class="mdc-list-item" data-value="vhdl" role="option">VHDL</li>
+                    <li class="mdc-list-item" data-value="visualforce" role="option">Visualforce</li>
+                    <li class="mdc-list-item" data-value="wollok" role="option">Wollok</li>
+                    <li class="mdc-list-item" data-value="xml" role="option">XML</li>
+                    <li class="mdc-list-item" data-value="xquery" role="option">XQuery</li>
+                    <li class="mdc-list-item" data-value="yaml" role="option">YAML</li>
+                </ul>
+            </div>
+            <label class="mdc-floating-label">Language</label>
+            <div class="mdc-notched-outline">
+                <svg>
+                    <path class="mdc-notched-outline__path"></path>
+                </svg>
+            </div>
+            <div class="mdc-notched-outline__idle"></div>
+        </div>
+        <div class="mdc-select mdc-select--outlined ace-theme">
+            <input type="hidden" name="enhanced-select">
+            <i class="mdc-select__dropdown-icon"></i>
+            <div id="demo-selected-text" class="mdc-select__selected-text" role="button" aria-haspopup="listbox" aria-labelledby="demo-label demo-selected-text">Theme</div>
+            <div class="mdc-select__menu mdc-menu mdc-menu-surface" role="listbox">
+                <ul class="mdc-list">
+                    <li class="mdc-list-item" data-value="ambiance" role="option">Ambiance</li>
+                    <li class="mdc-list-item" data-value="chaos" role="option">Chaos</li>
+                    <li class="mdc-list-item" data-value="chrome" role="option">Chrome</li>
+                    <li class="mdc-list-item" data-value="clouds_midnight" role="option">Clouds Midnight</li>
+                    <li class="mdc-list-item" data-value="clouds" role="option">Clouds</li>
+                    <li class="mdc-list-item" data-value="cobalt" role="option">Cobalt</li>
+                    <li class="mdc-list-item" data-value="crimson_editor" role="option">Crimson Editor</li>
+                    <li class="mdc-list-item" data-value="dawn" role="option">Dawn</li>
+                    <li class="mdc-list-item" data-value="dracula" role="option">Dracula</li>
+                    <li class="mdc-list-item" data-value="dreamweaver" role="option">Dreamweaver</li>
+                    <li class="mdc-list-item" data-value="eclipse" role="option">Dclipse</li>
+                    <li class="mdc-list-item" data-value="github" role="option">GitHub</li>
+                    <li class="mdc-list-item" data-value="gob" role="option">Gob</li>
+                    <li class="mdc-list-item" data-value="gruvbox" role="option">Gruvbox</li>
+                    <li class="mdc-list-item" data-value="idle_fingers" role="option">Idle Fingers</li>
+                    <li class="mdc-list-item" data-value="iplastic" role="option">Iplastic</li>
+                    <li class="mdc-list-item" data-value="katzenmilch" role="option">Katzenmilch</li>
+                    <li class="mdc-list-item" data-value="kr_theme" role="option">KR Theme</li>
+                    <li class="mdc-list-item" data-value="kuroir" role="option">Kuroir</li>
+                    <li class="mdc-list-item" data-value="merbivore_soft" role="option">Merbivore Soft</li>
+                    <li class="mdc-list-item" data-value="merbivore" role="option">Merbivore</li>
+                    <li class="mdc-list-item" data-value="mono_industrial" role="option">Mono Industrial</li>
+                    <li class="mdc-list-item" data-value="monokai" role="option">Monokai</li>
+                    <li class="mdc-list-item" data-value="pastel_on_dark" role="option">Pastel On Dark</li>
+                    <li class="mdc-list-item" data-value="solarized_dark" role="option">Solarized Dark</li>
+                    <li class="mdc-list-item" data-value="solarized_light" role="option">Solarized Light</li>
+                    <li class="mdc-list-item" data-value="sqlserver" role="option">SQL Server</li>
+                    <li class="mdc-list-item" data-value="terminal" role="option">Terminal</li>
+                    <li class="mdc-list-item" data-value="textmate" role="option">Textmate</li>
+                    <li class="mdc-list-item" data-value="tomorrow_night_blue" role="option">Tomorrow Night Blue</li>
+                    <li class="mdc-list-item" data-value="tomorrow_night_bright" role="option">Tomorrow Night Bright</li>
+                    <li class="mdc-list-item" data-value="tomorrow_night_eighties" role="option">Tomorrow Night Eighties</li>
+                    <li class="mdc-list-item" data-value="tomorrow_night" role="option">Tomorrow Night</li>
+                    <li class="mdc-list-item mdc-list-item--selected" data-value="tomorrow" role="option">Tomorrow</li>
+                    <li class="mdc-list-item" data-value="twilight" role="option">Twilight</li>
+                    <li class="mdc-list-item" data-value="vibrant_ink" role="option">Vibrant Ink</li>
+                    <li class="mdc-list-item" data-value="xcode" role="option">Xcode</li>
+                </ul>
+            </div>
+            <label class="mdc-floating-label">Theme</label>
+            <div class="mdc-notched-outline">
+                <svg>
+                    <path class="mdc-notched-outline__path"></path>
+                </svg>
+            </div>
+            <div class="mdc-notched-outline__idle"></div>
+        </div>
+        <button id="settings-button" class="mdc-button mdc-button--outlined" data-mdc-auto-init="MDCRipple">
+
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#3f51b5" viewBox="0 0 24 24">
+                <path fill="none" d="M0 0h24v24H0V0z" />
+                <path d="M19.43 12.98c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.09-.16-.26-.25-.44-.25-.06 0-.12.01-.17.03l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.06-.02-.12-.03-.18-.03-.17 0-.34.09-.43.25l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98 0 .33.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.09.16.26.25.44.25.06 0 .12-.01.17-.03l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.06.02.12.03.18.03.17 0 .34-.09.43-.25l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zm-1.98-1.71c.04.31.05.52.05.73 0 .21-.02.43-.05.73l-.14 1.13.89.7 1.08.84-.7 1.21-1.27-.51-1.04-.42-.9.68c-.43.32-.84.56-1.25.73l-1.06.43-.16 1.13-.2 1.35h-1.4l-.19-1.35-.16-1.13-1.06-.43c-.43-.18-.83-.41-1.23-.71l-.91-.7-1.06.43-1.27.51-.7-1.21 1.08-.84.89-.7-.14-1.13c-.03-.31-.05-.54-.05-.74s.02-.43.05-.73l.14-1.13-.89-.7-1.08-.84.7-1.21 1.27.51 1.04.42.9-.68c.43-.32.84-.56 1.25-.73l1.06-.43.16-1.13.2-1.35h1.39l.19 1.35.16 1.13 1.06.43c.43.18.83.41 1.23.71l.91.7 1.06-.43 1.27-.51.7 1.21-1.07.85-.89.7.14 1.13zM12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
+            </svg>Settings
+        </button>
+        <div id="settings-menu" class="mdc-menu mdc-menu-surface" tabindex="-1">
+            <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical">
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch behavioursenabled-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="behavioursenabled-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="behavioursenabled-input">Safe Mode</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch animatedscroll-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="animatedscroll-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="animatedscroll-input">Animated scrolling</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch copywithemptyselection-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="copywithemptyselection-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="copywithemptyselection-input">Copy with empty selection</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked displayindentguides-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="displayindentguides-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="displayindentguides-input">Indent guides</label>
+                    </div>
+                </li>
+
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked dragenabled-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="dragenabled-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="dragenabled-input">Dragging</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch enablebasicautocompletion-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="enablebasicautocompletion-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="enablebasicautocompletion-input">Basic auto completion</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked enableemmet-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="enableemmet-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="enableemmet-input">Emmet</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch enableliveautocompletion-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="enableliveautocompletion-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="enableliveautocompletion-input">Live auto completion</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked enablemultiselect-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="enablemultiselect-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="enablemultiselect-input">Multi select</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch enablesnippets-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="enablesnippets-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="enablesnippets-input">Snippets</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch fadefoldwidgets-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="fadefoldwidgets-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="fadefoldwidgets-input">Fade fold widgets</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch hscrollbaralwaysvisible-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="hscrollbaralwaysvisible-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="hscrollbaralwaysvisible-input">Always show horizontal scroll bar</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked highlightactiveline-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="highlightactiveline-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="highlightactiveline-input">Highlight selected line</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked highlightgutterline-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="highlightgutterline-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="highlightgutterline-input">Highlight gutter line</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked highlightselectedword-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="highlightselectedword-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="highlightselectedword-input">Highlight selected word</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked mergeundodeltas-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="mergeundodeltas-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="mergeundodeltas-input">Merge undo deltas</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch overwrite-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="overwrite-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="overwrite-input">Overwrite text</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch readonly-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="readonly-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="readonly-input">Viewing mode</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch scrollpastend-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="scrollpastend-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="scrollpastend-input">Scroll past the end</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked showfoldwidgets-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="showfoldwidgets-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="showfoldwidgets-input">Fold widgets</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked showgutter-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="showgutter-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="showgutter-input">Show gutter</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch showinvisibles-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="showinvisibles-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="showinvisibles-input">Show invisibles</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked showlinenumbers-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="showlinenumbers-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="showlinenumbers-input">Show line numbers</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked showprintmargin-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="showprintmargin-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="showprintmargin-input">Print margin</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked tooltipfollowsmouse-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="tooltipfollowsmouse-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="tooltipfollowsmouse-input">Tooltip follows mouse</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch mdc-switch--checked usesofttabs-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="usesofttabs-input" class="mdc-switch__native-control" role="switch" checked>
+                                </div>
+                            </div>
+                        </div>
+                        <label for="usesofttabs-input">Use soft tabs</label>
+                    </div>
+                </li>
+                <li role="menuitem">
+                    <div class="mdc-switch-wrap">
+                        <div class="mdc-switch vscrollbaralwaysvisible-switch" data-mdc-auto-init="MDCSwitch">
+                            <div class="mdc-switch__track"></div>
+                            <div class="mdc-switch__thumb-underlay">
+                                <div class="mdc-switch__thumb">
+                                    <input type="checkbox" id="vscrollbaralwaysvisible-input" class="mdc-switch__native-control" role="switch">
+                                </div>
+                            </div>
+                        </div>
+                        <label for="vscrollbaralwaysvisible-input">Always show vertical scroll bar</label>
+                    </div>
+                </li>
+                <li class="mdc-list-divider" role="separator"></li>
+                <li id="reset-everything-button" class="mdc-list-item" role="menuitem" data-mdc-auto-init="MDCRipple">
+                    <span class="mdc-list-item__text">Reset Everything</span>
+                </li>
+                <li class="mdc-list-divider" role="separator"></li>
+                <li id="import-everything-button" class="mdc-list-item" role="menuitem" data-mdc-auto-init="MDCRipple">
+                    <span class="mdc-list-item__text">Import Everything</span>
+                </li>
+                <li id="export-everything-button" class="mdc-list-item" role="menuitem" data-mdc-auto-init="MDCRipple">
+                    <span class="mdc-list-item__text">Export Everything</span>
+                </li>
+                <input id="file-input" type="file" name="name" style="display: none;" />
+            </ul>
+        </div>
+        <br>
+        <br>
+        <div class="wrapper">
+            <code id="ace-editorid">import random
+while True:
+    if input("Roll the dice?").lower() == "yes":
+        print("You got: " + random.randint(1, 6))
+    else:
+        break
+</code>
+
+        </div>
+        <div class="mdc-dialog" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title" aria-describedby="my-dialog-content">
+            <div class="mdc-dialog__container">
+                <div class="mdc-dialog__surface">
+                    <!-- Title cannot contain leading whitespace due to mdc-typography-baseline-top() -->
+                    <h2 class="mdc-dialog__title" id="my-dialog-title">
+          <!--
+     -->Are you sure?
+          <!--
+   -->
+        </h2>
+                    <footer class="mdc-dialog__actions">
+                        <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">No</button>
+                        <button type="button" id="reset-button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="accept">Yes</button>
+                    </footer>
+                </div>
+            </div>
+            <div class="mdc-dialog__scrim"></div>
+        </div>
+    </main>
+    <script async src='https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js'></script>
+    <script src='https://unpkg.com/material-components-web@0.41.1/dist/material-components-web.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ext-emmet.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ext-elastic_tabstops_lite.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ext-language_tools.js'></script>
+
+    <script>
+        window.mdc.autoInit();
+
+        var theme = "ace/theme/tomorrow";
+        var mode = "ace/mode/python";
+        var editor = ace.edit("ace-editorid");
+        editor.setTheme(theme);
+        editor.getSession().setMode(mode);
+        console.debug(editor.renderer.$showGutter);
+
+        function handleStorageItem(itemname, defaultvalue, callback) {
+            if (localStorage.getItem(itemname) === null) {
+                localStorage.setItem(itemname, defaultvalue);
+            }
+            callback(LZString.decompressFromUTF16(localStorage.getItem(itemname)));
+        }
+
+        function setStorageItem(itemname, value) {
+            localStorage.setItem(itemname, LZString.compressToUTF16(value));
+        }
+
+        handleStorageItem(
+            "text",
+            "ዢ氣䈌Ԁᜠᅠ䌡氢エʠᷠ஀ǐઇ5ᐢ岨ש亚猠ೱ犀⦠Ԡ∠䨰࠳䆫䉵ᠠㆱ㜠䨠㨢ࣸ䓂㧫䀫拷෠Ꮸ䁓寍Γ㢀冣ᆖ瀩傡✠᳢ٕỘôщ桠੨㐻ᜠᆠͧ#㇩攈౤Ƀഢ⋮$㊢ቀǍᡠ  ",
+            function(data) {
+                editor.setValue(data);
+            });
+
+        var select1 = new mdc.select.MDCSelect(document.querySelector(".ace-lang"));
+
+        select1.listen("MDCSelect:change", function() {
+            editor.getSession().setMode("ace/mode/" + select1.value);
+            setStorageItem("language", select1.value);
+        });
+
+        handleStorageItem("language", "Ǣ㰫䁌ྀ㭀 ", function(data) {
+            select1.value = data;
+        });
+
+        var select2 = new mdc.select.MDCSelect(document.querySelector(".ace-theme"));
+
+        select2.listen("MDCSelect:change", function() {
+            editor.setTheme("ace/theme/" + select2.value);
+            setStorageItem("theme", select2.value);
+        });
+
+        handleStorageItem("theme", "ף汍䐩楀着 ", function(data) {
+            select2.value = data;
+        });
+
+        var menu = new mdc.menu.MDCMenu(document.querySelector(".mdc-menu"));
+        document.
+        getElementById("settings-button").
+        addEventListener("click", function() {
+            menu.open = !menu.open;
+        });
+
+        document.getElementById("reset-button").addEventListener("click", function() {
+            localStorage.clear();
+            location.reload();
+        });
+
+        var dialog = new mdc.dialog.MDCDialog(document.querySelector(".mdc-dialog"));
+
+        document.
+        getElementById("reset-everything-button").
+        addEventListener("click", function() {
+            dialog.open();
+        });
+
+        editor.addEventListener("change", function() {
+            setStorageItem("text", editor.getValue());
+        });
+
+        document.
+        getElementById("import-everything-button").
+        addEventListener("click", function() {
+            document.getElementById("file-input").click();
+        });
+
+        document.getElementById("file-input").addEventListener("change", function() {
+            document.getElementById("file-input").click();
+        });
+
+        document.
+        getElementById("export-everything-button").
+        addEventListener("click", function() {
+            var textToSave = JSON.stringify(JSON.stringify(localStorage));
+
+            var hiddenElement = document.createElement("a");
+
+            hiddenElement.href = "data:attachment/text," + encodeURI(textToSave);
+            hiddenElement.target = "_blank";
+            hiddenElement.download = "ros-code-editor-save-" + Math.round(new Date().getTime() / 1000); + ".json";
+            hiddenElement.click();
+        });
+
+        var control = document.getElementById("file-input");
+        control.addEventListener(
+            "change",
+            function(event) {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var contents = event.target.result;
+                    console.debug(JSON.parse(JSON.parse(contents)));
+                    var data = JSON.parse(JSON.parse(contents));
+                    Object.keys(data).forEach(function(k) {
+                        localStorage.setItem(k, data[k]);
+                    });
+                    location.reload();
+                };
+                reader.onerror = function(event) {
+                    console.warn("File could not be read! Code " + event.target.error.code);
+                };
+                console.debug("Filename: " + control.files[0].name);
+                reader.readAsText(control.files[0]);
+            },
+            false);
+
+        function handleSwitch(element, storagename, defaultboolean, callback) {
+            document.
+            querySelector(element + " input").
+            addEventListener("change", function() {
+                setStorageItem(
+                    storagename,
+                    document.querySelector(element + " input").checked.toString());
+
+                callback(document.querySelector(element + " input").checked);
+            });
+            handleStorageItem(
+                storagename,
+                LZString.compressToUTF16(defaultboolean.toString()),
+                function(data) {
+                    if (data === "true" && defaultboolean !== true) {
+                        document.
+                        querySelector(element + " input").
+                        classList.remove("mdc-switch--checked");
+                        document.querySelector(element + " input").checked = true;
+                        callback(true);
+                    } else if (data === "false" && defaultboolean !== false) {
+                        document.
+                        querySelector(element + " input").
+                        classList.add("mdc-switch--checked");
+                        document.querySelector(element + " input").checked = false;
+                        callback(false);
+                    } else {
+                        callback(defaultboolean);
+                    }
+                });
+
+            callback(document.querySelector(element + " input").checked);
+        }
+        handleSwitch(".animatedscroll-switch", "animatedscroll", false, function(bool) {
+            editor.renderer.setAnimatedScroll(bool);
+        });
+        handleSwitch(".behavioursenabled-switch", "behavioursenabled", true, function(
+            bool) {
+            editor.setBehavioursEnabled(bool);
+        });
+        handleSwitch(
+            ".copywithemptyselection-switch",
+            "copywithemptyselection",
+            false,
+            function(bool) {
+                editor.$copyWithEmptySelection = bool;
+            });
+
+        handleSwitch(
+            ".displayindentguides-switch",
+            "displayindentguides",
+            true,
+            function(bool) {
+                editor.renderer.setDisplayIndentGuides(bool);
+            });
+
+        handleSwitch(".dragenabled-switch", "dragenabled", true, function(bool) {
+            editor.$mouseHandler.$dragEnabled = bool;
+        });
+        handleSwitch(
+            ".enablebasicautocompletion-switch",
+            "enablebasicautocompletion",
+            false,
+            function(bool) {
+                editor.$enableBasicAutocompletion = bool;
+            });
+
+        handleSwitch(".enableemmet-switch", "enableemmet", true, function(bool) {
+            editor.$enableEmmet = bool;
+        });
+        handleSwitch(
+            ".enableliveautocompletion-switch",
+            "enableliveautocompletion",
+            false,
+            function(bool) {
+                editor.$enableLiveAutocompletion = bool;
+            });
+
+        handleSwitch(".enablemultiselect-switch", "enablemultiselect", true, function(
+            bool) {
+            editor.$enableMultiselect = bool;
+        });
+        handleSwitch(".enablesnippets-switch", "enablesnippets", false, function(bool) {
+            editor.$enableSnippets = bool;
+        });
+        handleSwitch(".fadefoldwidgets-switch", "fadefoldwidgets", false, function(
+            bool) {
+            editor.renderer.setFadeFoldWidgets(bool);
+        });
+        handleSwitch(
+            ".hscrollbaralwaysvisible-switch",
+            "hscrollbaralwaysvisible",
+            false,
+            function(bool) {
+                editor.renderer.setHScrollBarAlwaysVisible(bool);
+            });
+
+        handleSwitch(
+            ".highlightactiveline-switch",
+            "highlightactiveline",
+            true,
+            function(bool) {
+                editor.setHighlightActiveLine(bool);
+            });
+
+        handleSwitch(
+            ".highlightgutterline-switch",
+            "highlightgutterline",
+            true,
+            function(bool) {
+                editor.renderer.setHighlightGutterLine(bool);
+            });
+
+        handleSwitch(
+            ".highlightselectedword-switch",
+            "highlightselectedword",
+            true,
+            function(bool) {
+                editor.setHighlightSelectedWord(bool);
+            });
+
+        handleSwitch(".mergeundodeltas-switch", "mergeundodeltas", true, function(
+            bool) {
+            editor.$mergeUndoDeltas = bool;
+        });
+        handleSwitch(".overwrite-switch", "overwrite", false, function(bool) {
+            editor.session.setOverwrite = bool;
+        });
+        handleSwitch(".readonly-switch", "readonly", false, function(bool) {
+            editor.setReadOnly(bool);
+        });
+        handleSwitch(".scrollpastend-switch", "scrollpastend", false, function(bool) {
+            editor.renderer.$scrollPastEnd = bool;
+        });
+        handleSwitch(".showfoldwidgets-switch", "showfoldwidgets", true, function(
+            bool) {
+            editor.setShowFoldWidgets(bool);
+        });
+        handleSwitch(".showgutter-switch", "showgutter", true, function(bool) {
+            editor.renderer.setShowGutter(bool);
+        });
+        handleSwitch(".showinvisibles-switch", "showinvisibles", false, function(bool) {
+            editor.renderer.setShowInvisibles(bool);
+        });
+        handleSwitch(".showlinenumbers-switch", "showlinenumbers", true, function(
+            bool) {
+            editor.$showLineNumbers = bool;
+        });
+        handleSwitch(".showprintmargin-switch", "showprintmargin", true, function(
+            bool) {
+            editor.renderer.setShowPrintMargin(bool);
+        });
+        handleSwitch(
+            ".tooltipfollowsmouse-switch",
+            "tooltipfollowsmouse",
+            true,
+            function(bool) {
+                editor.$mouseHandler.$tooltipFollowsMouse = bool;
+            });
+
+        handleSwitch(".usesofttabs-switch", "usesofttabs", true, function(bool) {
+            editor.session.setUseSoftTabs = bool;
+        });
+        handleSwitch(
+            ".vscrollbaralwaysvisible-switch",
+            "vscrollbaralwaysvisible",
+            false,
+            function(bool) {
+                editor.renderer.setVScrollBarAlwaysVisible(bool);
+            });
+    </script>
+
+</body>
+
+</html>
