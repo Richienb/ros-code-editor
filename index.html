@@ -8,7 +8,7 @@
 
     <title>ROS Code Editor</title>
     <meta name="description" content="An online code and plain text editor taking advantage of Google's Material Design for the Web library and Ace.">
-    
+
     <link rel="shortcut icon" href="favicon.ico">
 
     <link rel='stylesheet' href='https://unpkg.com/material-components-web@0.41.1/dist/material-components-web.min.css'>
@@ -19,21 +19,23 @@
             --mdc-theme-secondary: #f44336;
             --mdc-theme-on-primary: #ffffff;
             --mdc-theme-on-secondary: #ffffff;
-            body {
-                background-color: #3f51b5;
-                main {
-                    background-color: #ffffff;
-                    border-radius: 4px;
-                    position: absolute;
-                    margin-top: 20px;
-                    margin-bottom: 20px;
-                    margin-left: 20px;
-                    margin-right: 20px;
-                    min-width: calc(100vw - 80px);
-                    min-height: calc(100vh - 80px);
-                    padding: 20px;
-                }
-            }
+        }
+        
+        :root body {
+            background-color: #3f51b5;
+        }
+        
+        :root body main {
+            background-color: #ffffff;
+            border-radius: 4px;
+            position: absolute;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            margin-left: 20px;
+            margin-right: 20px;
+            min-width: calc(100vw - 80px);
+            min-height: calc(100vh - 80px);
+            padding: 20px;
         }
         
         @font-face {
