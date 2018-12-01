@@ -77,6 +77,7 @@
         #settings-button {
             float: right;
             height: 56px;
+            z-index: 1;
         }
         
         .mdc-switch-wrap {
@@ -87,12 +88,31 @@
             padding-left: 16px;
         }
         
-        #settings-button {
-            z-index: 1;
-        }
-        
         .wrapper {
             z-index: 0;
+        }
+        
+        .md-transition {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+        }
+        
+        @media only screen and (max-width: 575px) {
+            #settings-button {
+                float: none;
+                float: initial;
+                left: 50%;
+                position: absolute;
+                bottom: 20px;
+            }
+            .mdc-drawer-app-content > .mdc-select {
+                max-width: 150px;
+            }
+        }
+        
+        @media only screen and (max-width: 380px) {
+            .mdc-drawer-app-content > .mdc-select {
+                max-width: 115px;
+            }
         }
     </style>
 
