@@ -755,11 +755,9 @@ while True:
         var drawer = mdc.drawer.MDCDrawer.attachTo(
             document.querySelector(".mdc-drawer"));
 
-        var theme = "ace/theme/tomorrow";
-        var mode = "ace/mode/python";
         var editor = ace.edit("ace-editorid");
-        editor.setTheme(theme);
-        editor.getSession().setMode(mode);
+        editor.setTheme("ace/theme/tomorrow");
+        editor.getSession().setMode("ace/mode/python");
 
         function handleStorageItem(itemname, defaultvalue, callback) {
             if (localStorage.getItem(itemname) === null) {
@@ -913,7 +911,7 @@ while True:
             "copywithemptyselection",
             false,
             function(bool) {
-                editor.$copyWithEmptySelection = bool;
+                editor.setOption("copyWithEmptySelection", bool);
             });
 
         handleSwitch(
@@ -925,33 +923,33 @@ while True:
             });
 
         handleSwitch(".dragenabled-switch", "dragenabled", true, function(bool) {
-            editor.$mouseHandler.$dragEnabled = bool;
+            editor.setOption("dragEnabled", bool);
         });
         handleSwitch(
             ".enablebasicautocompletion-switch",
             "enablebasicautocompletion",
             false,
             function(bool) {
-                editor.$enableBasicAutocompletion = bool;
+                editor.setOption("enableBasicAutocompletion", bool);
             });
 
         handleSwitch(".enableemmet-switch", "enableemmet", true, function(bool) {
-            editor.$enableEmmet = bool;
+            editor.setOption("enableEmmet", bool);
         });
         handleSwitch(
             ".enableliveautocompletion-switch",
             "enableliveautocompletion",
             false,
             function(bool) {
-                editor.$enableLiveAutocompletion = bool;
+                editor.setOption("enableLiveAutocompletion", bool);
             });
 
         handleSwitch(".enablemultiselect-switch", "enablemultiselect", true, function(
             bool) {
-            editor.$enableMultiselect = bool;
+            editor.setOption("enableMultiselect", bool);
         });
         handleSwitch(".enablesnippets-switch", "enablesnippets", false, function(bool) {
-            editor.$enableSnippets = bool;
+            editor.setOption("enableSnippets", bool);
         });
         handleSwitch(".fadefoldwidgets-switch", "fadefoldwidgets", false, function(
             bool) {
@@ -991,7 +989,7 @@ while True:
 
         handleSwitch(".mergeundodeltas-switch", "mergeundodeltas", true, function(
             bool) {
-            editor.$mergeUndoDeltas = bool;
+            editor.setOption("mergeUndoDeltas", bool);
         });
         handleSwitch(".overwrite-switch", "overwrite", false, function(bool) {
             editor.session.setOverwrite = bool;
@@ -1000,7 +998,7 @@ while True:
             editor.setReadOnly(bool);
         });
         handleSwitch(".scrollpastend-switch", "scrollpastend", false, function(bool) {
-            editor.renderer.$scrollPastEnd = bool;
+            editor.setOption("scrollPastEnd", bool);
         });
         handleSwitch(".showfoldwidgets-switch", "showfoldwidgets", true, function(
             bool) {
@@ -1014,7 +1012,7 @@ while True:
         });
         handleSwitch(".showlinenumbers-switch", "showlinenumbers", true, function(
             bool) {
-            editor.$showLineNumbers = bool;
+            editor.setOption("showLineNumbers", bool);
         });
         handleSwitch(".showprintmargin-switch", "showprintmargin", true, function(
             bool) {
@@ -1025,7 +1023,7 @@ while True:
             "tooltipfollowsmouse",
             true,
             function(bool) {
-                editor.$mouseHandler.$tooltipFollowsMouse = bool;
+                editor.setOption("tooltipFollowsMouse", bool);
             });
 
         handleSwitch(".usesofttabs-switch", "usesofttabs", true, function(bool) {
