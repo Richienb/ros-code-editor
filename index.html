@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    
+
     <meta name="theme-color" content="#3F51B5">
 
     <title>ROS Code Editor</title>
@@ -55,7 +55,7 @@
             font-family: "Fira Code";
             font-style: normal;
             font-weight: 400;
-            src: local("Fira Code"), url("https://cdn.jsdelivr.net/npm/firacode@1/distr/woff2/FiraCode-Regular.woff2") format("woff2"), url("https://cdn.jsdelivr.net/npm/firacode@1/distr/woff/FiraCode-Regular.woff") format("woff"), url("https://cdn.jsdelivr.net/npm/firacode@1/distr/ttf/FiraCode-Regular.ttf") format("truetype"), url("https://cdn.jsdelivr.net/npm/firacode@1/distr/otf/FiraCode-Regular.otf") format("opentype"), url("https://cdn.jsdelivr.net/npm/firacode@1/distr/eot/FiraCode-Regular.eot") format("embedded-opentype");
+            src: local("Fira Code"), url("https://cdn.jsdelivr.net/npm/firacode@1.205.0/distr/woff2/FiraCode-Regular.woff2") format("woff2"), url("https://cdn.jsdelivr.net/npm/firacode@1.205.0/distr/woff/FiraCode-Regular.woff") format("woff"), url("https://cdn.jsdelivr.net/npm/firacode@1.205.0/distr/ttf/FiraCode-Regular.ttf") format("truetype"), url("https://cdn.jsdelivr.net/npm/firacode@1.205.0/distr/otf/FiraCode-Regular.otf") format("opentype"), url("https://cdn.jsdelivr.net/npm/firacode@1.205.0/distr/eot/FiraCode-Regular.eot") format("embedded-opentype");
         }
         
         .wrapper {
@@ -86,6 +86,10 @@
         #settings-button svg {
             width: 36px;
             height: 36px;
+        }
+        
+        .ace_search {
+            margin-top: 40px;
         }
         
         .mdc-switch-wrap {
@@ -119,6 +123,9 @@
             }
             .mdc-drawer-app-content > .mdc-select {
                 max-width: 150px;
+            }
+            .ace_search {
+                margin-top: initial;
             }
         }
         
