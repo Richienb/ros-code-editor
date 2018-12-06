@@ -13,7 +13,7 @@
 
     <link rel="shortcut icon" href="favicon.ico">
 
-    <link rel='stylesheet' href='https://unpkg.com/material-components-web@0.41.1/dist/material-components-web.min.css'>
+    <link rel='stylesheet' href='https://unpkg.com/material-components-web@0.42.0/dist/material-components-web.min.css'>
 
     <style>
         :root {
@@ -89,6 +89,7 @@
         }
         
         .ace_search {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0s;
             margin-top: 40px;
         }
         
@@ -106,6 +107,10 @@
         
         .md-transition {
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+        }
+        
+        .mdc-drawer-app-content > .mdc-select {
+            max-width: 200px;
         }
         
         @media only screen and (max-width: 660px) {
@@ -501,6 +506,7 @@
                     </li>
                     <li class="mdc-list-divider" role="separator"></li>
                     <li id="reset-everything-button" class="mdc-list-item" role="menuitem" data-mdc-auto-init="MDCRipple">
+
                         <span class="mdc-list-item__text">Reset Everything</span>
                     </li>
                     <li class="mdc-list-divider" role="separator"></li>
@@ -681,13 +687,13 @@
                         <li class="mdc-list-item" data-value="yaml" role="option">YAML</li>
                     </ul>
                 </div>
-                <label class="mdc-floating-label">Language</label>
                 <div class="mdc-notched-outline">
-                    <svg>
-                        <path class="mdc-notched-outline__path"></path>
-                    </svg>
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label class="mdc-floating-label">Language</label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
                 </div>
-                <div class="mdc-notched-outline__idle"></div>
             </div>
             <div class="mdc-select mdc-select--outlined ace-theme md-transition">
                 <input type="hidden" name="enhanced-select">
@@ -734,13 +740,13 @@
                         <li class="mdc-list-item" data-value="xcode" role="option">Xcode</li>
                     </ul>
                 </div>
-                <label class="mdc-floating-label">Theme</label>
                 <div class="mdc-notched-outline">
-                    <svg>
-                        <path class="mdc-notched-outline__path"></path>
-                    </svg>
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label class="mdc-floating-label">Theme</label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
                 </div>
-                <div class="mdc-notched-outline__idle"></div>
             </div>
             <button id="settings-button" class="mdc-fab mdc-fab--extended md-transition" data-mdc-auto-init="MDCRipple">
                 <svg class="mdc-fab__icon" xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
@@ -752,25 +758,12 @@
             <br>
             <br>
             <div class="wrapper">
-                <code id="ace-editorid">import random
-while True:
-    if input("Roll the dice?").lower() == "yes":
-        print("You got: " + random.randint(1, 6))
-    else:
-        break
-</code>
-
+                <code id="ace-editorid"></code>
             </div>
             <div class="mdc-dialog" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title" aria-describedby="my-dialog-content">
                 <div class="mdc-dialog__container">
                     <div class="mdc-dialog__surface">
-                        <!-- Title cannot contain leading whitespace due to mdc-typography-baseline-top() -->
-                        <h2 class="mdc-dialog__title" id="my-dialog-title">
-            <!--
-     -->Are you sure?
-            <!--
-   -->
-          </h2>
+                        <h2 class="mdc-dialog__title" id="my-dialog-title">Are you sure?</h2>
                         <footer class="mdc-dialog__actions">
                             <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">No</button>
                             <button type="button" id="reset-button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="accept">Yes</button>
@@ -782,7 +775,7 @@ while True:
         </div>
     </main>
     <script async src='https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js'></script>
-    <script src='https://unpkg.com/material-components-web@0.41.1/dist/material-components-web.min.js'></script>
+    <script src='https://unpkg.com/material-components-web@0.42.0/dist/material-components-web.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ace.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ext-emmet.js'></script>
